@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - mynetwork
+    restart: always
+
+  web:
+    build: .
+    command: gunicorn myproject.wsgi:application --bind unix:/run/gunicorn.sock --workers 3
+    env_file:
+      - .env.prod
+    volumes:
+      - static_volume:/app/static
+    depends_on:
+      - db
+    networks:
+      - mynetwork
+    restart: always
+
+  nginx:
+    image: nginx:stable-alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - static_volume:/app/static
+      - /run/gunicorn.sock:/run/gunicorn.sock
+    depends_on:
+      - web
+    networks:
+      - mynetwork
+    restart: always
+
+volumes:
+  postgres_data:
+  static_volume:
+
+networks:
+  mynetwork:
+    driver: bridge

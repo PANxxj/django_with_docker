@@ -1,0 +1,75 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.swp
+*.swo
+*.coverage
+*.egg-info/
+*.eggs
+*.manifest
+*.spec
+*.log
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+
+# Django
+*.sqlite3
+*.db
+*.pot
+*.pyc
+*.pyo
+*.pyd
+*.mo
+*.log
+media/
+staticfiles/
+static/
+*.DS_Store
+
+# Django migrations (optional: commit them if you want)
+*/migrations/*.py
+!*/migrations/__init__.py
+
+# Node / frontend (if using npm/yarn)
+node_modules/
+dist/
+
+# Docker
+*.env
+docker-compose.override.yml
+docker-compose.local.yml
+
+# IDEs and editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# macOS
+.DS_Store
+
+# PyCharm
+.idea/
+
+# pytest
+.cache/
+.pytest_cache/
+
+# coverage reports
+htmlcov/
+coverage.xml
+nosetests.xml
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Logs
+*.log
