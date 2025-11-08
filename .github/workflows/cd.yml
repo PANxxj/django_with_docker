@@ -20,7 +20,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          IMAGE_TAG=${{ secrets.DOCKER_USERNAME }}/django_with_docker:${GITHUB_SHA}
+          IMAGE_TAG=${{ secrets.DOCKER_USERNAME }}/django_with_docker:${{ github.sha }}
           docker build --no-cache -t $IMAGE_TAG .
           docker push $IMAGE_TAG
 
@@ -35,7 +35,7 @@ jobs:
           script: |
             cd /home/ubuntu/django_with_docker
             echo "Pulling image: $IMAGE_TAG"
-            docker pull $IMAGE_TAG
+            docker pull $IMAGE_TAG  # Use the environment variable directly
             docker-compose down
-            IMAGE=$IMAGE_TAG docker-compose up -d --force-recreate
+            IMAGE=$IMAGE_TAG docker-compose up -d --force-recreate  # Use the environment variable directly
             sudo docker image prune -f
