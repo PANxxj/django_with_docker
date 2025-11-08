@@ -14,16 +14,7 @@ services:
     restart: always
 
   web:
-    build:
-      context: .
-      args:
-        SECRET_KEY: ${SECRET_KEY}
-        SERVER: ${SERVER}
-        DEBUG: ${DEBUG}
-        DB_NAME: ${DB_NAME}
-        DB_USER: ${DB_USER}
-        DB_PASSWORD: ${DB_PASSWORD}4
-
+    build: .
     command: gunicorn application.wsgi:application --bind unix:/run/gunicorn.sock --workers 3
     env_file:
       - .env
