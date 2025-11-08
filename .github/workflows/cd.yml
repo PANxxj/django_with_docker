@@ -34,7 +34,6 @@ jobs:
             IMAGE_TAG: ${{ secrets.DOCKER_USERNAME }}/django_with_docker:${{ github.sha }}
           script: |
             cd /home/ubuntu/django_with_docker
-            IMAGE_TAG=${{ secrets.DOCKER_USERNAME }}/django_with_docker:${GITHUB_SHA}
             echo "Pulling image: $IMAGE_TAG"
             docker pull $IMAGE_TAG
             docker-compose down
