@@ -12,15 +12,16 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Log in to Docker Hub
+      - name: Log in to GitHub Container Registry
         uses: docker/login-action@v2
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
         run: |
-          IMAGE_TAG=${{ secrets.DOCKER_USERNAME }}/django_with_docker:${{ github.sha }}
+          IMAGE_TAG=ghcr.io/${{ github.repository }}:${{ github.sha }}
           docker build --no-cache -t $IMAGE_TAG .
           docker push $IMAGE_TAG
 
@@ -32,13 +33,5 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd /home/ubuntu/django_with_docker
-            echo "Logging into Docker Hub..."
-            echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-            IMAGE_TAG=${{ secrets.DOCKER_USERNAME }}/django_with_docker:${{ github.sha }}
-            echo "Pulling image: $IMAGE_TAG"
-            docker pull $IMAGE_TAG
-            docker-compose down
-            export WEB_IMAGE=$IMAGE_TAG
-            docker-compose up -d --force-recreate
-            sudo docker image prune -f
-            docker logout
+            chmod +x deploy.sh
+            ./deploy.sh ghcr.io/${{ github.repository }}:${{ github.sha }}
