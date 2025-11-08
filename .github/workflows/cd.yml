@@ -34,7 +34,8 @@ jobs:
             cd /home/ubuntu/django_with_docker
             IMAGE_TAG=${{ secrets.DOCKER_USERNAME }}/django_with_docker:${{ github.sha }}
             echo "Pulling image: $IMAGE_TAG"
-            docker pull $IMAGE_TAG  # Use the environment variable directly
+            docker pull $IMAGE_TAG
             docker-compose down
-            IMAGE=$IMAGE_TAG docker-compose up -d --force-recreate  # Use the environment variable directly
+            export WEB_IMAGE=$IMAGE_TAG
+            docker-compose up -d --force-recreate
             sudo docker image prune -f
