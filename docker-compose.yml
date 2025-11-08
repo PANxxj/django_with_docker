@@ -14,7 +14,7 @@ services:
     restart: always
 
   web:
-    image: ${DOCKER_USERNAME}/django_with_docker:latest
+    image: ${WEB_IMAGE}
     command: gunicorn application.wsgi:application --bind unix:/run/gunicorn.sock --workers 3
     env_file:
       - .env
