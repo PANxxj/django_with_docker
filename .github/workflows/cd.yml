@@ -32,6 +32,7 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd /home/ubuntu/django_with_docker
+            IMAGE_TAG=${{ secrets.DOCKER_USERNAME }}/django_with_docker:${GITHUB_SHA}
             docker pull $IMAGE_TAG
             docker-compose down
             IMAGE=$IMAGE_TAG docker-compose up -d --force-recreate
