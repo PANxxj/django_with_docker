@@ -21,7 +21,8 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          IMAGE_TAG=ghcr.io/${{ github.repository }}:${{ github.sha }}
+          REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          IMAGE_TAG=ghcr.io/${REPO_LOWER}:${{ github.sha }}
           docker build --no-cache -t $IMAGE_TAG .
           docker push $IMAGE_TAG
 
@@ -34,4 +35,5 @@ jobs:
           script: |
             cd /home/ubuntu/django_with_docker
             chmod +x deploy.sh
-            ./deploy.sh ghcr.io/${{ github.repository }}:${{ github.sha }}
+            REPO_LOWER=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+            ./deploy.sh ghcr.io/${REPO_LOWER}:${{ github.sha }}
