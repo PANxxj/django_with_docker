@@ -36,12 +36,12 @@ if ! command_exists docker-compose; then
     exit 1
 fi
 
-# Login to GitHub Container Registry
-echo -e "${YELLOW}Logging into GitHub Container Registry...${NC}"
-if [ -f ~/.github_token ]; then
-    cat ~/.github_token | docker login ghcr.io -u $USER --password-stdin
+# Login to Docker Hub
+echo -e "${YELLOW}Logging into Docker Hub...${NC}"
+if [ -f ~/.docker_token ]; then
+    cat ~/.docker_token | docker login -u $DOCKER_USERNAME --password-stdin
 else
-    echo -e "${RED}Warning: ~/.github_token not found. Make sure you have access to pull the image.${NC}"
+    echo -e "${RED}Warning: ~/.docker_token not found. Make sure you have access to pull the image.${NC}"
 fi
 
 # Pull the new image
@@ -77,6 +77,6 @@ echo -e "${YELLOW}Cleaning up old images...${NC}"
 docker image prune -f
 
 # Logout for security
-docker logout ghcr.io 2>/dev/null || true
+docker logout 2>/dev/null || true
 
 echo -e "${GREEN}Deployment completed!${NC}"
