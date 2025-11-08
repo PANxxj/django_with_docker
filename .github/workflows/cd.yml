@@ -30,10 +30,9 @@ jobs:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          envs: 
-            IMAGE_TAG: ${{ secrets.DOCKER_USERNAME }}/django_with_docker:${{ github.sha }}
           script: |
             cd /home/ubuntu/django_with_docker
+            IMAGE_TAG=${{ secrets.DOCKER_USERNAME }}/django_with_docker:${{ github.sha }}
             echo "Pulling image: $IMAGE_TAG"
             docker pull $IMAGE_TAG  # Use the environment variable directly
             docker-compose down
