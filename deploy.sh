@@ -59,7 +59,8 @@ docker-compose down
 
 # Set the new image and start containers
 echo -e "${YELLOW}Starting containers with new image...${NC}"
-export WEB_IMAGE=$IMAGE_TAG
+echo -e "${YELLOW}Updating image tag in .env...${NC}"
+sed -i "s|WEB_IMAGE=.*|WEB_IMAGE=$IMAGE_TAG|" .env
 docker-compose up -d --force-recreate
 
 # Check if containers are running
