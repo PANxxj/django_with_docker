@@ -23,15 +23,6 @@ jobs:
           docker build --no-cache -t ${{ secrets.DOCKER_USERNAME }}/django_with_docker:latest .
           docker push ${{ secrets.DOCKER_USERNAME }}/django_with_docker:latest
 
-      - name: Copy deployment files to server
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          source: "docker-compose.yml,.env,deploy.sh"
-          target: "/home/ubuntu/django_with_docker/"
-
       - name: Deploy to server
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -40,5 +31,6 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd /home/ubuntu/django_with_docker
-            chmod +x deploy.sh
-            ./deploy.sh ${{ secrets.DOCKER_USERNAME }}/django_with_docker:latest
+            docker pull ${{ secrets.DOCKER_USERNAME }}/django_with_docker:latest
+            docker-compose down
+            docker-compose up -d 
