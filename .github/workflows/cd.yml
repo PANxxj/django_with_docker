@@ -32,5 +32,6 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd /home/ubuntu/django_with_docker
+            git pull origin master
             chmod +x deploy.sh
             ./deploy.sh ${{ secrets.DOCKER_USERNAME }}/django_with_docker:${{ github.sha }}
