@@ -47,14 +47,11 @@ jobs:
 
       - name: Deploy to server
         uses: appleboy/ssh-action@v0.1.7
-        env:
-          IMAGE_TAG: ${{ needs.build.outputs.image-tag }}
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          envs: IMAGE_TAG
           script: |
             cd /home/ubuntu/django_with_docker
             chmod +x deploy.sh
-            ./deploy.sh $IMAGE_TAG
+            ./deploy.sh "${{ needs.build.outputs.image-tag }}"
