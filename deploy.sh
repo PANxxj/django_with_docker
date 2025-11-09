@@ -57,20 +57,48 @@ fi
 echo -e "${YELLOW}Stopping current containers...${NC}"
 docker-compose down
 
-# Set the new image and start containers
-echo -e "${YELLOW}Starting containers with new image...${NC}"
+# Blue-green deployment: Start new containers first
 echo -e "${YELLOW}Updating image tag in .env...${NC}"
 sed -i "s|WEB_IMAGE=.*|WEB_IMAGE=$IMAGE_TAG|" .env
-docker-compose up -d --force-recreate
 
-# Check if containers are running
-sleep 10
-echo -e "${YELLOW}Checking container health...${NC}"
+echo -e "${YELLOW}Starting new containers...${NC}"
+docker-compose up -d --no-deps web
+
+# Wait for new container to be healthy
+echo -e "${YELLOW}Waiting for application to be healthy...${NC}"
+for i in {1..30}; do
+    if docker-compose exec -T web python manage.py check --deploy; then
+        echo -e "${GREEN}Application health check passed${NC}"
+        break
+    fi
+    if [ $i -eq 30 ]; then
+        echo -e "${RED}Health check failed, rolling back...${NC}"
+        docker-compose down
+        exit 1
+    fi
+    sleep 2
+done
+
+# Run migrations and collect static files
+echo -e "${YELLOW}Running database migrations...${NC}"
+docker-compose exec -T web python manage.py migrate --noinput
+
+echo -e "${YELLOW}Collecting static files...${NC}"
+docker-compose exec -T web python manage.py collectstatic --noinput
+
+# Now update nginx to point to new containers
+echo -e "${YELLOW}Updating nginx configuration...${NC}"
+docker-compose up -d nginx
+
+# Check final deployment status
+sleep 5
+echo -e "${YELLOW}Final deployment verification...${NC}"
 if docker-compose ps | grep -q "Up"; then
-    echo -e "${GREEN}Deployment successful! Containers are running.${NC}"
+    echo -e "${GREEN}Deployment successful! All containers are running.${NC}"
 else
-    echo -e "${RED}Warning: Some containers may not be running properly${NC}"
+    echo -e "${RED}Deployment failed!${NC}"
     docker-compose ps
+    exit 1
 fi
 
 # Clean up old images
