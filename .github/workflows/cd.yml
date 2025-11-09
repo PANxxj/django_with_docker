@@ -33,4 +33,5 @@ jobs:
             cd /home/ubuntu/django_with_docker
             docker pull ${{ secrets.DOCKER_USERNAME }}/django_with_docker:latest
             docker-compose down
+            docker system prune -f 
             docker-compose up -d 
