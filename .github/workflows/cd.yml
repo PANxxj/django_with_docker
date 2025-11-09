@@ -6,10 +6,8 @@ on:
       - master
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    outputs:
-      image-tag: ${{ steps.build.outputs.image-tag }}
 
     steps:
       - uses: actions/checkout@v4
@@ -21,20 +19,9 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build and push Docker image
-        id: build
         run: |
-          IMAGE_TAG=${{ secrets.DOCKER_USERNAME }}/django_with_docker:${{ github.sha }}
-          docker build --no-cache -t $IMAGE_TAG .
-          docker push $IMAGE_TAG
-          echo "image-tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment: production
-
-    steps:
-      - uses: actions/checkout@v4
+          docker build --no-cache -t ${{ secrets.DOCKER_USERNAME }}/django_with_docker:latest .
+          docker push ${{ secrets.DOCKER_USERNAME }}/django_with_docker:latest
 
       - name: Copy deployment files to server
         uses: appleboy/scp-action@v0.1.4
@@ -54,4 +41,4 @@ jobs:
           script: |
             cd /home/ubuntu/django_with_docker
             chmod +x deploy.sh
-            ./deploy.sh "${{ needs.build.outputs.image-tag }}"
+            ./deploy.sh ${{ secrets.DOCKER_USERNAME }}/django_with_docker:latest
